@@ -30,7 +30,7 @@ def api_main():
         if artist not in dict:
             dict[artist] = []
         dict[artist].append(name)
-    with open('manga.json','a',encoding='utf8')as fp:
+    with open('manga.json','w',encoding='utf8')as fp:
         json.dump(dict,fp,ensure_ascii=False)
     logging.info("manga.json done!")
 
