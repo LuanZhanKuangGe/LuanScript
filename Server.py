@@ -12,16 +12,16 @@ app.config["AVPath"] = Path("X:\\")
 
 @app.route("/", methods=["GET"])
 def api_main():
-    # logging.info("更新全部json")
-    # dict = {}
-    # dict["actor"] = []
-    # dict["av"] = []
-    # for av in app.config["AVPath"].rglob('*.nfo'):
-    #     id = av.name.split(" ")[0]
-    #     dict["av"].append(id)
-    # with open('av.json','a',encoding='utf8')as fp:
-    #     json.dump(dict,fp,ensure_ascii=False)
-    # logging.info("av.json done!")
+    logging.info("更新全部json")
+    dict = {}
+    dict["actor"] = []
+    dict["av"] = []
+    for av in app.config["AVPath"].rglob('*.nfo'):
+        id = av.name.split(" ")[0]
+        dict["av"].append(id)
+    with open('av.json','w',encoding='utf8')as fp:
+        json.dump(dict,fp,ensure_ascii=False)
+    logging.info("av.json done!")
 
     dict = {}
     for manga in app.config["MangaPath"].iterdir():
