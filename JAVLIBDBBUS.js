@@ -36,6 +36,15 @@
                     for(var i = 0; i < noshowtag.length; i++)
                         if(_title.indexOf(noshowtag[i])>-1)
                             $(this).remove()
+
+                    //使用大预览图
+                    let _pic = $(this).children("a").children("img").attr("src")
+                    $(this).children("a").children("img").attr("src", _pic.replace("ps.jpg","pl.jpg"))
+                    $(this).children("a").children("img").attr("width", "90%")
+                    $(this).children("a").children("img").attr("height", "90%")
+                    $(this).attr("style", "width:600px;height: 405px;")
+                    $(this).children("a").children("div.id").text($(this).children("a").children("div.id").text() + " " + _title)
+                    $(this).children("a").children("div.title").remove()
                 });
             }
 
@@ -80,6 +89,36 @@
                         if(_title.indexOf(noshowtag[i])>-1)
                             $(this).remove()
                 });
+
+                //显示演员的信息
+                if(window.location.href.indexOf("actors")>-1)
+                {
+                    $("div.actor-box").each(function () {
+                        var names = $(this).children("a").attr("title").split(", ")
+                        for(var name in names) {
+                            if(dict[names[name]])
+                            {
+                                var tag = '<strong>已收藏' + dict[names[name]].length +  '部</strong>'
+
+                                $(this).children("a").children("strong").after(tag)
+                            }
+                        }
+                    });
+
+                    {
+                        var names1 = $("div.section-title").children("h2").children("span.actor-section-name").text().split(", ")
+                        var names2 = $("div.section-title").children("h2").children("span.section-meta:first").text().split(", ")
+                        var names = names1.concat(names2)
+                        for(var name in names) {
+                            if(dict[names[name]])
+                            {
+                                var tag = $("div.section-title").children("h2").children("span.section-meta:last").text() + " 已收藏"  + dict[names[name]].length +  "部"
+                                $("div.section-title").children("h2").children("span.section-meta:last").text(tag)
+                            }
+                        }
+
+                    }
+                }
             }
 
         },
