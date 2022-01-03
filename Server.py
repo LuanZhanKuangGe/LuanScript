@@ -17,9 +17,9 @@ def api_main():
     dict = {}
     for actor in app.config["AVPath"].iterdir():
         if actor.is_dir():
-            dict[actor.stem] = []
+            dict[actor.stem.split("_")[0]] = []
             for video in actor.rglob("*.nfo"):
-                dict[actor.stem].append(video.stem.split(" ")[0])
+                dict[actor.stem.split("_")[0]].append(video.stem.split(" ")[0])
     with open("av.json", "w", encoding="utf8") as fp:
         json.dump(dict, fp, ensure_ascii=False)
     logging.info("av.json done!")
