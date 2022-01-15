@@ -15,6 +15,18 @@
     $("h1#gj").text("")
     $("h1#gj").append(txt);
 
+    //快速显示作者单行本
+    $("div#taglist").children("table").children("tbody").children("tr").each(function(){
+        if ($(this).children("td:eq(0)").text() == "artist:")
+        {
+            let artist = $(this).children("td:eq(1)").children("div").children("a").text()
+            let url = '/?f_search=tankoubon%24+artist%3A"' + artist.replace(" ","+") + '%24'
+            let node = '<div class="gt" style="opacity:1.0"><a href='+ url +'>karube guri tankoubon</a></div>'
+            $(this).children("td:eq(1)").children("div:first").after(node)
+        }
+
+    });
+
     GM_xmlhttpRequest({
         method: "GET",
         url: "http://192.168.0.114:8864/manga",
@@ -38,8 +50,14 @@
                     for(var i = 0; i < dict[artist].length; i++) {
 
                         let name = dict[artist][i].split(" ")[0]
+                        name = name.replace(/\【.*?\】/g, '' )
+
+                        console.log("网页 = " + manga+ " " + encodeURIComponent(manga.trim()))
+                        console.log("本地 = " + name + " " + encodeURIComponent(name.trim()))
+
                         if( name == manga)
                         {
+                            console.log("haveManga")
                             haveManga = 1
                             if(dict[artist][i].indexOf("[DL版]") != -1)
                             {
