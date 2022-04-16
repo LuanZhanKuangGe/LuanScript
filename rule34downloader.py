@@ -26,6 +26,7 @@ def show_progress(block_num, block_size, total_size):
 class iwaraSpider(scrapy.Spider):
     name = "rule34xxx"
     url = "https://rule34.xxx/index.php?page=favorites&s=view&id=1178285"
+    fo = open("rule34.txt", "w")
 
     def start_requests(self):
         request = scrapy.Request(url=self.url, callback=self.parse)
@@ -56,12 +57,13 @@ class iwaraSpider(scrapy.Spider):
         url = response.css("source::attr(src)").getall()
         src = url[0].split("?")[0]
         name = url[0].split("?")[1] + ".mp4"
-        print(name + " download start!!!!!")
-        urllib.request.urlretrieve(src, name, show_progress)
-        print(name + " download stop!!!!!")
+        # print(name + " download start!!!!!")
+        print(src)
+        self.fo.write(url[0]+'\n')
+        # print(name + " download stop!!!!!")
 
 
 if __name__ == "__main__":
-    process = CrawlerProcess({"LOG_LEVEL": "INFO"})
+    process = CrawlerProcess({"LOG_LEVEL": "WARNING"})
     process.crawl(iwaraSpider)
     process.start()

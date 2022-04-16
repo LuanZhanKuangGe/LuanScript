@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from pathlib import Path
 import json
 import logging
@@ -53,10 +53,7 @@ def update_3d():
 
 @app.route("/", methods=["GET"])
 def api_main():
-    update_av()
-    update_manga()
-    update_3d()
-    return "更新全部完成"
+    return render_template('server.html')
 
 
 @app.route("/manga", methods=["GET"])

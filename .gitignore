@@ -127,7 +127,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-.vscode/settings.json
+.vscode/
 manga.json
 av.json
 desktop.ini
+run.bat
+r34anim.txt
+3d.json
+98T_115_SHA1.txt
+98T_NO.txt
+98T_OTHER.txt
+.vs/
