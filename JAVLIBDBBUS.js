@@ -1,9 +1,8 @@
 // ==UserScript==
 // @name         突出显示本地已经存在的视频
 // @match        https://javdb.com/*
-// @match        http://www.javlibrary.com/*
+// @match        https://www.javlibrary.com/*
 // @match        https://www.javbus.com/*
-// @icon         https://www.google.com/s2/favicons?domain=javdb.com
 // @require      https://code.jquery.com/jquery-3.2.1.slim.min.js
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
@@ -12,12 +11,12 @@
 
     GM_xmlhttpRequest({
         method: "GET",
-        url: "http://192.168.0.114:8864/av",
+        url: "http://192.168.0.115:8864/av",
         onload: function (result) {
             let _text = result.responseText;
             let dict = JSON.parse(result.responseText);
 
-            let noshowtag = ["【VR】","五十路"];
+            let noshowtag = ["【VR】","五十路","脱糞"];
 
             if(window.location.host.indexOf("javlibrary")>-1)
             {
@@ -38,13 +37,13 @@
                             $(this).remove()
 
                     //使用大预览图
-                    let _pic = $(this).children("a").children("img").attr("src")
-                    $(this).children("a").children("img").attr("src", _pic.replace("ps.jpg","pl.jpg"))
-                    $(this).children("a").children("img").attr("width", "90%")
-                    $(this).children("a").children("img").attr("height", "90%")
-                    $(this).attr("style", "width:600px;height: 405px;")
-                    $(this).children("a").children("div.id").text($(this).children("a").children("div.id").text() + " " + _title)
-                    $(this).children("a").children("div.title").remove()
+                    //                     let _pic = $(this).children("a").children("img").attr("src")
+                    //                     $(this).children("a").children("img").attr("src", _pic.replace("ps.jpg","pl.jpg"))
+                    //                     $(this).children("a").children("img").attr("width", "90%")
+                    //                     $(this).children("a").children("img").attr("height", "90%")
+                    //                     $(this).attr("style", "width:600px;height: 405px;")
+                    //                     $(this).children("a").children("div.id").text($(this).children("a").children("div.id").text() + " " + _title.slice(0,30))
+                    //                     $(this).children("a").children("div.title").remove()
                 });
             }
 
@@ -70,8 +69,8 @@
 
             if(window.location.host.indexOf("javdb")>-1)
             {
-                $("div.grid-item").each(function () {
-                    let _name = $(this).children("a").children("div.uid").text()
+                $("div.item").each(function () {
+                    let _name = $(this).children("a").children("div.video-title").children("strong").text()
                     let _title = $(this).children("a").children("div.video-title").text()
 
                     for(var actor in dict) {
@@ -90,10 +89,21 @@
                             $(this).remove()
                 });
 
+                //显示片商的信息
+                if(window.location.href.indexOf("makers")>-1||window.location.href.indexOf("series")>-1)
+                {
+                    $("a.box").each(function () {
+                        var url = $(this).attr("href") + "?f=download"
+                        $(this).attr("href", url)
+                    });
+                }
+
                 //显示演员的信息
-                if(window.location.href.indexOf("actors")>-1)
+                if(window.location.href.indexOf("actors")>-1||window.location.href.indexOf("actor_monthly")>-1)
                 {
                     $("div.actor-box").each(function () {
+                        var url = $(this).children("a").attr("href") + "?t=d"
+                        $(this).children("a").attr("href", url)
                         var names = $(this).children("a").attr("title").split(", ")
                         for(var name in names) {
                             if(dict[names[name]])
