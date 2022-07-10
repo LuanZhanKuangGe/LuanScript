@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         突出显示本地已经存在的视频
 // @match        https://javdb.com/*
+// @match        https://javdb002.com/*
 // @match        https://www.javlibrary.com/*
 // @match        https://www.javbus.com/*
 // @require      https://code.jquery.com/jquery-3.2.1.slim.min.js
@@ -30,6 +31,7 @@
 
             if(window.location.host.indexOf("javlibrary")>-1)
             {
+                console.log("javlibrary");
                 var id = $("div#video_id").children("table").children("tbody").children("tr").children("td.text").text().trim()
                 var db_url = 'https://javdb.com/search?q=' + id
                 var db_node = '<div id="video_genres" class="item"><table><tbody><tr><td class="header">外链:</td><td class="text"><span class="genre"><a href="' + db_url +' " rel="category tag">JavDB</a></span></td><td class="icon"></td></tr></tbody></table></div>'
@@ -68,6 +70,7 @@
 
             if(window.location.host.indexOf("javbus")>-1)
             {
+                console.log("javbus");
                 $("a.movie-box").each(function () {
                     let _name = $(this).children("div.photo-info").children("span").children("date:first").text()
                     let _title = $(this).children("div.photo-info").children("span").text()
@@ -84,10 +87,26 @@
                         if(_title.indexOf(noshowtag[i])>-1)
                             $(this).remove()
                 });
+
+                if(window.location.href.indexOf("actresses")>-1)
+                {
+                    console.log("javbus actresses");
+                    $("a.avatar-box").each(function () {
+                        let _name =  $(this).children("div.photo-info").children("span").text()
+                        _name = _name.replace(/\（.*?\）/g, '' )
+                        if(dict[_name])
+                        {
+                            var text = '<span>已收藏' + dict[_name].length +  '部</span>'
+                            $(this).children("div.photo-info").append(text);
+                            $(this).hide();
+                        }
+                    });
+                }
             }
 
             if(window.location.host.indexOf("javdb")>-1)
             {
+                console.log("javdb");
                 $("div.item").each(function () {
                     let _name = $(this).children("a").children("div.video-title").children("strong").text()
                     let _title = $(this).children("a").children("div.video-title").text()
@@ -111,6 +130,7 @@
                 //显示片商的信息
                 if(window.location.href.indexOf("makers")>-1||window.location.href.indexOf("series")>-1)
                 {
+                    console.log("javdb makers series");
                     $("a.box").each(function () {
                         var url = $(this).attr("href") + "?f=download"
                         $(this).attr("href", url)
@@ -120,6 +140,7 @@
                 //显示演员的信息
                 if(window.location.href.indexOf("actors")>-1||window.location.href.indexOf("actor_monthly")>-1)
                 {
+                    console.log("javdb actors actor_monthly");
                     $("div.actor-box").each(function () {
                         var url = $(this).children("a").attr("href") + "?t=d"
                         $(this).children("a").attr("href", url)
