@@ -5,13 +5,23 @@
 // @match        https://www.javbus.com/*
 // @require      https://code.jquery.com/jquery-3.2.1.slim.min.js
 // @grant        GM_xmlhttpRequest
+// @grant        GM_registerMenuCommand
+// @grant        GM_getValue
+// @grant        GM_setValue
 // ==/UserScript==
 
 (function() {
 
+    GM_registerMenuCommand("Jav大图", () => {
+        var javbp = GM_getValue("javbp")
+        if(javbp=="true")GM_setValue("javbp", "false")
+        if(javbp=="false")GM_setValue("javbp", "true")
+        location.reload()
+    });
+
     GM_xmlhttpRequest({
         method: "GET",
-        url: "http://192.168.0.115:8864/av",
+        url: "http://127.0.0.1:8864/av",
         onload: function (result) {
             let _text = result.responseText;
             let dict = JSON.parse(result.responseText);
@@ -20,7 +30,12 @@
 
             if(window.location.host.indexOf("javlibrary")>-1)
             {
-                $("div.video").each(function () {
+                var id = $("div#video_id").children("table").children("tbody").children("tr").children("td.text").text().trim()
+                var db_url = 'https://javdb.com/search?q=' + id
+                var db_node = '<div id="video_genres" class="item"><table><tbody><tr><td class="header">外链:</td><td class="text"><span class="genre"><a href="' + db_url +' " rel="category tag">JavDB</a></span></td><td class="icon"></td></tr></tbody></table></div>'
+                $("div#video_info").append(db_node);
+
+                $("div.video").each(async function () {
                     let _name = $(this).children("a").children("div.id").text()
                     let _title = $(this).children("a").children("div.title").text()
 
@@ -36,15 +51,19 @@
                         if(_title.indexOf(noshowtag[i])>-1)
                             $(this).remove()
 
-                    //使用大预览图
-                    //                     let _pic = $(this).children("a").children("img").attr("src")
-                    //                     $(this).children("a").children("img").attr("src", _pic.replace("ps.jpg","pl.jpg"))
-                    //                     $(this).children("a").children("img").attr("width", "90%")
-                    //                     $(this).children("a").children("img").attr("height", "90%")
-                    //                     $(this).attr("style", "width:600px;height: 405px;")
-                    //                     $(this).children("a").children("div.id").text($(this).children("a").children("div.id").text() + " " + _title.slice(0,30))
-                    //                     $(this).children("a").children("div.title").remove()
-                });
+                    //Jav大预览图
+                    var javbp = await GM_getValue("javbp")
+                    if(javbp=="true"){
+                        let _pic = $(this).children("a").children("img").attr("src")
+                        $(this).children("a").children("img").attr("src", _pic.replace("ps.jpg","pl.jpg"))
+                        $(this).children("a").children("img").attr("width", "90%")
+                        $(this).children("a").children("img").attr("height", "90%")
+                        $(this).attr("style", "width:600px;height: 405px;")
+                        $(this).children("a").children("div.id").text($(this).children("a").children("div.id").text() + " " + _title.slice(0,30))
+                        $(this).children("a").children("div.title").remove()
+                    }
+
+                })
             }
 
             if(window.location.host.indexOf("javbus")>-1)
@@ -133,7 +152,7 @@
 
         },
         onerror: function (e) {
-            console.log(e);
+            alert(e);
         }
     });
 
