@@ -4,11 +4,23 @@
 // @match        *://exhentai.org/*
 // @include			*://exhentai.org/g/*
 // @include			*://g.e-hentai.org/g/*
+// @match        https://exhentai.org/gallerytorrents.php?*
 // @require      https://code.jquery.com/jquery-3.2.1.slim.min.js
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
 (function() {
+
+    //种子转磁链
+    $("div#torrentinfo").children("div").children("form").each(function () {
+        let _url = $(this).children("div").children("table").children("tbody").children("tr:eq(2)").children("td").children("a").attr("href");
+        console.log(_url);
+        _url = _url.substring(_url.lastIndexOf('torrent')-1,_url.lastIndexOf('torrent')-40-1);
+        _url = "magnet:?xt=urn:btih:"+ _url
+        console.log(_url);
+        $(this).children("div").children("table").children("tbody").children("tr:eq(2)").children("td").children("a").attr("href",_url);
+        $(this).children("div").children("table").children("tbody").children("tr:eq(2)").children("td").children("a").removeAttr("onclick")
+    });
 
     //快速搜索种子
     var txt="<a href=\"https://btsow.rest/search/"+ $("h1#gj").text() +"\">"+ $("h1#gj").text() +"</a>";
@@ -29,7 +41,7 @@
 
     GM_xmlhttpRequest({
         method: "GET",
-        url: "http://192.168.0.114:8864/manga",
+        url: "http://127.0.0.1:8864/manga",
         onload: function (result) {
             let dict = JSON.parse(result.responseText);
             $("div.gl1t").each(function () {
@@ -51,13 +63,8 @@
 
                         let name = dict[artist][i].split(" ")[0]
                         name = name.replace(/\【.*?\】/g, '' )
-
-                        console.log("网页 = " + manga+ " " + encodeURIComponent(manga.trim()))
-                        console.log("本地 = " + name + " " + encodeURIComponent(name.trim()))
-
                         if( name == manga)
                         {
-                            console.log("haveManga")
                             haveManga = 1
                             if(dict[artist][i].indexOf("[DL版]") != -1)
                             {
