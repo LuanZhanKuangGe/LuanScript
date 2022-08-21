@@ -3,13 +3,13 @@ from pathlib import Path
 import json
 import logging
 
-
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
-app.config["MangaPath"] = Path("Y:\Manga")
-app.config["AVPath"] = Path("X:\\")
-app.config["3DPath"] = Path("Z:\\rule34\\")
+app.config["MangaPath"] = Path("P:\\Manga\\")
+app.config["AVPath"] = Path("Z:\\")
+app.config["3DPath"] = Path("V:\\rule34\\")
+
 
 @app.route("/updateav", methods=["GET"])
 def update_av():
@@ -38,6 +38,7 @@ def update_manga():
         json.dump(dict, fp, ensure_ascii=False)
     logging.info("manga.json done!")
     return "更新manga完成"
+
 
 @app.route("/update3d", methods=["GET"])
 def update_3d():
@@ -69,11 +70,13 @@ def api_av():
         dict = json.load(fp)
         return dict
 
+
 @app.route("/3d", methods=["GET"])
 def api_3d():
     with open("./3d.json", "r", encoding="utf8") as fp:
         dict = json.load(fp)
         return dict
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="8864")

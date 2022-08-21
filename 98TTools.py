@@ -1,15 +1,15 @@
 from datetime import date
 import logging
 import random
-from matplotlib.pyplot import title
 import scrapy
 from scrapy.crawler import CrawlerProcess
+
 
 class Spider98T(scrapy.Spider):
     name = "98TTools"
     urls = 'https://rewrfsrewr.xyz/forum.php?mod=forumdisplay&fid=95&orderby=dateline&typeid=716&orderby=dateline&typeid=716&filter=author'
     start_pages = 1
-    stop_pages = 900
+    stop_pages = 40
 
     def start_requests(self):
         UserAgents = [
@@ -50,10 +50,10 @@ class Spider98T(scrapy.Spider):
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
         ]
 
-        UserAgent=random.choice(UserAgents)
+        UserAgent = random.choice(UserAgents)
 
-        headers={'User-Agent':UserAgent}
-        for page in range(self.start_pages,self.stop_pages+1):
+        headers = {'User-Agent': UserAgent}
+        for page in range(self.start_pages, self.stop_pages + 1):
             url = self.urls + '&page=' + str(page)
             request = scrapy.Request(url=url, headers=headers, callback=self.parse)
             request.cb_kwargs["page"] = str(page)
@@ -63,16 +63,16 @@ class Spider98T(scrapy.Spider):
 
         print("页数 : ", page)
 
-        fono = open("98T_NO.txt", "a", encoding='utf-8') # 阅读权限
-        foother = open("98T_OTHER.txt", "a", encoding='utf-8') # 其它
-        fo115 = open("98T_115_SHA1.txt", "a", encoding='utf-8') # 115
+        fono = open("98T_NO.txt", "a", encoding='utf-8')  # 阅读权限
+        foother = open("98T_OTHER.txt", "a", encoding='utf-8')  # 其它
+        fo115 = open("98T_115_SHA1.txt", "a", encoding='utf-8')  # 115
 
         for tbody in response.css("tbody"):
             if tbody.attrib.get('id'):
-                if tbody.attrib['id'].find('normalthread')!=-1:
+                if tbody.attrib['id'].find('normalthread') != -1:
                     flag = True
                     for text in tbody.css("tr").css("th::text").getall():
-                        if text.find("阅读权限")!=-1:
+                        if text.find("阅读权限") != -1:
                             flag = False
                     title = tbody.css("tr").css("th").css("a.s::text").get()
                     url = tbody.css("tr").css("th").css("a.s").attrib['href']
@@ -85,10 +85,10 @@ class Spider98T(scrapy.Spider):
                     else:
                         print("date error !!!!!!!!!!!!!!!!!!!")
                         exit(1)
-                    str = date + " "  + title + " " + 'https://rewrfsrewr.xyz/' + url + "\n";
+                    str = date + " " + title + " " + 'https://rewrfsrewr.xyz/' + url + "\n";
                     # print(str)
                     if flag:
-                        if title.find('115')!=-1 or title.upper().find('SHA')!=-1:
+                        if title.find('115') != -1 or title.upper().find('SHA') != -1:
                             fo115.write(str)
                         else:
                             foother.write(str)
@@ -97,6 +97,7 @@ class Spider98T(scrapy.Spider):
         fono.close()
         foother.close()
         fo115.close()
+
 
 if __name__ == "__main__":
     level = "INFO"

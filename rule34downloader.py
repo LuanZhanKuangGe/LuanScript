@@ -47,7 +47,7 @@ class iwaraSpider(scrapy.Spider):
     def parse2(self, response):
         urls = response.css("span.thumb").css("a::attr(href)").getall()
         for url in urls:
-            file = os.path.join("Z:", "rule34", url.split("id=")[1] + ".mp4")
+            file = os.path.join("V:", "rule34", url.split("id=")[1] + ".mp4")
             url = "https://rule34.xxx/" + url
             if not os.path.exists(file):
                 request = scrapy.Request(url=url, callback=self.parse3)

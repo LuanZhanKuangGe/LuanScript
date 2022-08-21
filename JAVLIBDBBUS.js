@@ -92,7 +92,11 @@
                 {
                     console.log("javbus actresses");
                     $("a.avatar-box").each(function () {
+
+
                         let _name =  $(this).children("div.photo-info").children("span").text()
+                        let _url = 'https://javdb002.com/search?q=' + _name + '&f=actor'
+                        $(this).attr("href", _url)
                         _name = _name.replace(/\（.*?\）/g, '' )
                         if(dict[_name])
                         {

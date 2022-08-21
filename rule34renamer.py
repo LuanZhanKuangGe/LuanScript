@@ -12,11 +12,11 @@ print(target)
 
 lines = fo.readlines()
 for line in lines:
-    src = Path(target)/Path(line.split("?")[0].strip().split("/")[-1])
-    name = Path(target)/Path(line.split("?")[1].strip() + ".mp4")
+    src = Path(target) / Path(line.split("?")[0].strip().split("/")[-1])
+    name = Path(target) / Path(line.split("?")[1].strip() + ".mp4")
 
     if src.exists():
         src.rename(name)
-        print(src, " 重命名为 " , name)
+        print(src, " 重命名为 ", name)
     else:
         print(src, " 不存在")
