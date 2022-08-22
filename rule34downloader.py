@@ -1,69 +1,58 @@
 import os
-import re
+import sys
 import scrapy
-import urllib.request
+import json
 from scrapy.crawler import CrawlerProcess
-import progressbar
-from tqdm import tqdm
 
-pbar = None
-
-
-def show_progress(block_num, block_size, total_size):
-    global pbar
-    if pbar is None:
-        pbar = progressbar.ProgressBar(maxval=total_size)
-        pbar.start()
-
-    downloaded = block_num * block_size
-    if downloaded < total_size:
-        pbar.update(downloaded)
-    else:
-        pbar.finish()
-        pbar = None
+target = "garryswood"
+data_dict = {}
 
 
-class iwaraSpider(scrapy.Spider):
-    name = "rule34xxx"
-    url = "https://rule34.xxx/index.php?page=favorites&s=view&id=1178285"
+class rule43spider(scrapy.Spider):
+    name = target
+    res = []
     fo = open("rule34.txt", "w")
 
     def start_requests(self):
-        request = scrapy.Request(url=self.url, callback=self.parse)
+        url = 'https://rule34.xxx/index.php?page=post&s=list&tags=3d+video+sound+' + target
+        request = scrapy.Request(url=url, callback=self.get_page)
         yield request
 
-    def parse(self, response):
-        last = response.css("div#paginator").css("a::attr(onclick)").getall()[-1]
-        last = last.split("pid=")[1]
-        last = last.split("'; ")[0]
-        page = int(int(last) / 50) + 1
-        print("收藏总页数 : ", page)
-
-        for i in range(page):
-            url = self.url + "&pid=" + str(i * 50)
-            request = scrapy.Request(url=url, callback=self.parse2)
+    def get_page(self, response):
+        print(response.url)
+        urls = [response.url + "&pid=0"]
+        pages = response.css("div#paginator").css("a")
+        for page in pages:
+            if not page.attrib.get("alt"):
+                url = response.urljoin(page.attrib["href"])
+                urls.append(url)
+        for url in urls:
+            request = scrapy.Request(url=url, callback=self.get_video)
             yield request
 
-    def parse2(self, response):
+    def get_video(self, response):
+        print(response.url)
         urls = response.css("span.thumb").css("a::attr(href)").getall()
         for url in urls:
-            file = os.path.join("V:", "rule34", url.split("id=")[1] + ".mp4")
-            url = "https://rule34.xxx/" + url
-            if not os.path.exists(file):
-                request = scrapy.Request(url=url, callback=self.parse3)
-                yield request
+            url = response.urljoin(url)
+            request = scrapy.Request(url=url, callback=self.get_url)
+            yield request
 
-    def parse3(self, response):
-        url = response.css("source::attr(src)").getall()
-        src = url[0].split("?")[0]
-        name = url[0].split("?")[1] + ".mp4"
-        # print(name + " download start!!!!!")
-        print(src)
-        self.fo.write(url[0]+'\n')
-        # print(name + " download stop!!!!!")
+    def get_url(self, response):
+        print(response.url)
+        url = response.css("source::attr(src)").getall()[0]
+        url = response.urljoin(url)
+        self.res.append(url)
+
+    def closed(self, response):
+        for url in self.res:
+            self.fo.write(url + '\n')
+        print(len(self.res))
 
 
 if __name__ == "__main__":
     process = CrawlerProcess({"LOG_LEVEL": "WARNING"})
-    process.crawl(iwaraSpider)
+    process.crawl(rule43spider)
     process.start()
+
+
