@@ -11,7 +11,7 @@ app.config["AVPath"] = Path("Z:\\")
 app.config["3DPath"] = Path("V:\\rule34\\")
 
 
-@app.route("/updateav", methods=["GET"])
+@app.route("/update_av", methods=["GET"])
 def update_av():
     dict = {}
     for actor in app.config["AVPath"].iterdir():
@@ -25,7 +25,7 @@ def update_av():
     return "更新AV完成"
 
 
-@app.route("/updatemanga", methods=["GET"])
+@app.route("/update_manga", methods=["GET"])
 def update_manga():
     dict = {}
     for manga in app.config["MangaPath"].iterdir():
@@ -40,12 +40,12 @@ def update_manga():
     return "更新manga完成"
 
 
-@app.route("/update3d", methods=["GET"])
+@app.route("/update_3d", methods=["GET"])
 def update_3d():
     dict = {}
     dict["data"] = []
-    for video in app.config["3DPath"].iterdir():
-        dict["data"].append(video.stem)
+    for video in app.config["3DPath"].rglob("*.mp4"):
+        dict["data"].append(video.stem.split('_')[-1])
     with open("3d.json", "w", encoding="utf8") as fp:
         json.dump(dict, fp, ensure_ascii=False)
     logging.info("3d.json done!")
