@@ -2,13 +2,14 @@ from flask import Flask, render_template
 from pathlib import Path
 import json
 import logging
+import shutil
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
-app.config["MangaPath"] = Path("P:\\Manga\\")
-app.config["AVPath"] = Path("Z:\\")
-app.config["3DPath"] = Path("V:\\rule34\\")
+app.config["MangaPath"] = Path(r"N:\HentaiPicture\Manga")
+app.config["AVPath"] = Path(r"N:\AV")
+app.config["3DPath"] = Path(r"N:\HentaiVideo\rule34")
 
 
 @app.route("/update_av", methods=["GET"])
@@ -44,8 +45,12 @@ def update_manga():
 def update_3d():
     dict = {}
     dict["data"] = []
+    dict["artist"] = []
     for video in app.config["3DPath"].rglob("*.mp4"):
         dict["data"].append(video.stem.split('_')[-1])
+        for artist in video.stem.split('_')[0:-2]:
+            if artist not in dict["artist"]:
+                dict["artist"].append(artist)
     with open("3d.json", "w", encoding="utf8") as fp:
         json.dump(dict, fp, ensure_ascii=False)
     logging.info("3d.json done!")
@@ -79,4 +84,5 @@ def api_3d():
 
 
 if __name__ == "__main__":
+    # update_3d()
     app.run(host="0.0.0.0", port="8864")

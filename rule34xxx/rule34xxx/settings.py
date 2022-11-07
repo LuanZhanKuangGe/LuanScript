@@ -12,7 +12,7 @@ BOT_NAME = 'rule34xxx'
 SPIDER_MODULES = ['rule34xxx.spiders']
 NEWSPIDER_MODULE = 'rule34xxx.spiders'
 
-FILES_STORE = r'C:\Users\zhoub\Downloads\rule34'
+FILES_STORE = r'N:\HentaiVideo\rule34'
 DOWNLOAD_MAXSIZE = 0
 
 
