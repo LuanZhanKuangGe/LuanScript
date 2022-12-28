@@ -4,6 +4,8 @@
 // @match        https://javdb002.com/*
 // @match        https://www.javlibrary.com/*
 // @match        https://www.javbus.com/*
+// @match        https://www.141jav.com/*
+// @match        https://btsow.cfd/search/*
 // @require      https://code.jquery.com/jquery-3.2.1.slim.min.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_registerMenuCommand
@@ -12,6 +14,15 @@
 // ==/UserScript==
 
 (function() {
+
+    if(window.location.host.indexOf("btsow")>-1)
+    {
+        $("div.data-list").children("div.row").children("a").each(function () {
+            let _new = "magnet:?xt=urn:btih:" + $(this).attr("href").split("/")[6]
+            $(this).attr("href",_new);
+            console.log($(this).attr("href"));
+        });
+    }
 
     GM_registerMenuCommand("Jav大图", () => {
         var javbp = GM_getValue("javbp")
@@ -27,14 +38,23 @@
             let _text = result.responseText;
             let dict = JSON.parse(result.responseText);
 
-            let noshowtag = ["【VR】","五十路","脱糞"];
+            let noshowtag = ["【VR】","五十路","六十路","七十路","脱糞"];
 
             if(window.location.host.indexOf("javlibrary")>-1)
             {
                 console.log("javlibrary");
                 var id = $("div#video_id").children("table").children("tbody").children("tr").children("td.text").text().trim()
-                var db_url = 'https://javdb.com/search?q=' + id
-                var db_node = '<div id="video_genres" class="item"><table><tbody><tr><td class="header">外链:</td><td class="text"><span class="genre"><a href="' + db_url +' " rel="category tag">JavDB</a></span></td><td class="icon"></td></tr></tbody></table></div>'
+                var db_url1 = 'https://javdb.com/search?q=' + id
+                var db_url2 = 'https://www.javbus.com/' + id
+                var db_url3 = 'https://btsow.cfd/search/'+ id
+                var db_url4 = 'https://www.141jav.com/search/'+ id.replace("-","")
+                var db_node = '<div id="video_genres" class="item"><table><tbody><tr><td class="header">外链:</td><td class="text">' +
+                    '<span class="genre"><a href="' + db_url2 +' " target = "_blank" rel="category tag">JavBus</a></span>' +
+                    '<span class="genre"><a href="' + db_url1 +' " " target = "_blank" rel="category tag">JavDB</a></span>' +
+                    '<span class="genre"><a href="' + db_url3 +' " " target = "_blank" rel="category tag">BTSOW</a></span>' +
+                    '<span class="genre"><a href="' + db_url4 +' " " target = "_blank" rel="category tag">141JAV</a></span>' +
+                    '</td><td class="icon"></td></tr></tbody></table></div>'
+
                 $("div#video_info").append(db_node);
 
                 $("div.video").each(async function () {
@@ -95,7 +115,8 @@
 
 
                         let _name =  $(this).children("div.photo-info").children("span").text()
-                        let _url = 'https://javdb002.com/search?q=' + _name + '&f=actor'
+                        let _url = 'https://javdb.com/search?q=' + _name + '&f=actor'
+                        console.log(_url);
                         $(this).attr("href", _url)
                         _name = _name.replace(/\（.*?\）/g, '' )
                         if(dict[_name])
@@ -106,6 +127,16 @@
                         }
                     });
                 }
+            }
+
+            if(window.location.host.indexOf("141jav")>-1)
+            {
+                $("h5.title").each(function () {
+                    let _id = $(this).children("a").text().trim()
+                    let _url = 'https://www.javlibrary.com/cn/vl_searchbyid.php?keyword=' + _id
+                    $(this).children("a").attr("href",_url)
+                    $(this).children("a").attr("target","_blank")
+                })
             }
 
             if(window.location.host.indexOf("javdb")>-1)
@@ -146,15 +177,17 @@
                 {
                     console.log("javdb actors actor_monthly");
                     $("div.actor-box").each(function () {
-                        var url = $(this).children("a").attr("href") + "?t=d"
+                        var url = $(this).children("a").attr("href")
                         $(this).children("a").attr("href", url)
                         var names = $(this).children("a").attr("title").split(", ")
+
                         for(var name in names) {
                             if(dict[names[name]])
                             {
+                                console.log(names[name]);
                                 var tag = '<strong>已收藏' + dict[names[name]].length +  '部</strong>'
-
                                 $(this).children("a").children("strong").after(tag)
+
                             }
                         }
                     });
@@ -166,6 +199,7 @@
                         for(var name in names) {
                             if(dict[names[name]])
                             {
+                                console.log(names[name]);
                                 var tag = $("div.section-title").children("h2").children("span.section-meta:last").text() + " 已收藏"  + dict[names[name]].length +  "部"
                                 $("div.section-title").children("h2").children("span.section-meta:last").text(tag)
                             }
