@@ -1,10 +1,13 @@
 import logging
 import os
 import re
+import shutil
+
 import scrapy
 from scrapy.crawler import CrawlerProcess
 import tkinter as tk
 from tkinter import filedialog
+from pathlib import Path
 
 
 root = tk.Tk()
@@ -47,7 +50,17 @@ class iwaraSpider(scrapy.Spider):
 
 
 if __name__ == "__main__":
-    level = "INFO"
-    process = CrawlerProcess({"LOG_LEVEL": level})
-    process.crawl(iwaraSpider)
-    process.start()
+    # level = "INFO"
+    # process = CrawlerProcess({"LOG_LEVEL": level})
+    # process.crawl(iwaraSpider)
+    # process.start()
+    for file in os.listdir(target):
+        old_file = Path(target)/Path(file)
+        if old_file.suffix == '.mp4' and file.find(" - ") != -1:
+            arist = file.split(" - ")[0]
+            if arist.find(".") == -1:
+                Path.mkdir(Path(target)/arist, exist_ok=True)
+                new_file = Path(target)/old_file.parent/arist/old_file.name
+                print(str(old_file) + " 移动到 " + str(new_file))
+                shutil.move(old_file, new_file)
+

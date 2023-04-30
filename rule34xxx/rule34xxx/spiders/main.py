@@ -14,51 +14,56 @@ class MainSpider(scrapy.Spider):
         for file in sorted(Path('N:\\HentaiVideo\\rule34\\').glob('**/*.mp4')):
             self.file_exist.append(file.stem.split("_")[-1])
 
+        counter = 0
         if not hasattr(self, 'artist') or self.artist == "all":
             for artist in Path('N:\\HentaiVideo\\rule34\\').iterdir():
                 if artist.is_dir():
-                    url = 'https://rule34.xxx/index.php?page=post&s=list&tags=3d+video+sound+' + artist.name
+                    counter += 1
+                    url = 'https://rule34.xxx/index.php?page=post&s=list&tags=video+sound+' + artist.name
                     request = scrapy.Request(url=url, callback=self.get_page)
                     request.cb_kwargs["artist"] = artist.name
-                    request.cb_kwargs["all"] = True
+                    request.cb_kwargs["check_all"] = True
+                    request.cb_kwargs["counter"] = counter
                     yield request
         else:
             artist_name = self.artist
-            url = 'https://rule34.xxx/index.php?page=post&s=list&tags=3d+video+sound+' + artist_name
+            url = 'https://rule34.xxx/index.php?page=post&s=list&tags=video+sound+' + artist_name
             request = scrapy.Request(url=url, callback=self.get_page)
             request.cb_kwargs["artist"] = artist_name
-            request.cb_kwargs["all"] = False
+            request.cb_kwargs["check_all"] = False
+            request.cb_kwargs["counter"] = counter
             yield request
 
-
-
-    def get_page(self, response, artist, all):
+    def get_page(self, response, artist, check_all, counter):
         urls = [response.url + "&pid=0"]
         pages = response.css("div#paginator").css("a")
         for page in pages:
             if not page.attrib.get("alt"):
                 url = response.urljoin(page.attrib["href"])
                 urls.append(url)
-        if all:
+        if check_all:
             request = scrapy.Request(url=urls[0], callback=self.get_video)
             request.cb_kwargs["artist"] = artist
+            request.cb_kwargs["counter"] = counter
             yield request
         else:
             for url in urls:
                 request = scrapy.Request(url=url, callback=self.get_video)
                 request.cb_kwargs["artist"] = artist
+                request.cb_kwargs["counter"] = counter
                 yield request
 
-    def get_video(self, response, artist):
+    def get_video(self, response, artist, counter):
         urls = response.css("span.thumb").css("a::attr(href)").getall()
         for url in urls:
             if url.split("=")[-1] not in self.file_exist:
                 url = response.urljoin(url)
                 request = scrapy.Request(url=url, callback=self.get_url)
                 request.cb_kwargs["artist"] = artist
+                print(counter, artist, url, "start download..")
                 yield request
             else:
-                print(url, "already exist.")
+                print(counter, artist, url, "already exist.")
 
     def get_url(self, response, artist):
         url_item = urlItem()
