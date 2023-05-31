@@ -3,9 +3,17 @@ import paramiko
 from pathlib import Path
 
 config = {"MangaPath": Path(r"N:\HentaiPicture\Manga"), "AVPath": Path(r"N:\AV"),
-          "Rule34": Path(r"N:\HentaiVideo\rule34")}
+          "Rule34": Path(r"N:\HentaiVideo\rule34"),"MMD": Path(r"N:\HentaiVideo\MMD")}
 
-database = {"rule34_data": [], "rule34_artist": [], "manga": {}, 'jav_id': [], 'jav_actor': {}}
+database = {"rule34_data": [], "rule34_artist": [], "mmd_data": [], "manga": {}, 'jav_id': [], 'jav_actor': {}}
+
+# 更新mmd数据
+for folder in config["MMD"].iterdir():
+    if folder.is_dir() and not folder.name.startswith('[Del]'):
+        for video in folder.glob("*.mp4"):
+            video_id = video.stem.split('[')[-2].split(']')[0]
+            database["mmd_data"].append(video_id)
+
 
 # 更新rule34数据
 for video in config["Rule34"].rglob("*.mp4"):
