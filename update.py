@@ -45,16 +45,16 @@ for video in config["AVPath"].rglob("*.nfo"):
     else:
         print(video)
 
-# 更新JAV演员数据
-for actor in (config["AVPath"] / "[[单体]]").iterdir():
-    if actor.is_dir():
-        actor_name = actor.stem.split("_")[0]
-        database['jav_actor'][actor_name] = []
-        for video in actor.rglob("*.nfo"):
-            video_id = video.stem.split(" ")[0].split("]")[1]
-            if video_id[-1] == 'z':
-                video_id = video_id[0:-1]
-            database['jav_actor'][actor_name].append(video_id)
+# # 更新JAV演员数据
+# for actor in (config["AVPath"] / "[[单体]]").iterdir():
+#     if actor.is_dir():
+#         actor_name = actor.stem.split("_")[0]
+#         database['jav_actor'][actor_name] = []
+#         for video in actor.rglob("*.nfo"):
+#             video_id = video.stem.split(" ")[0].split("]")[1]
+#             if video_id[-1] == 'z':
+#                 video_id = video_id[0:-1]
+#             database['jav_actor'][actor_name].append(video_id)
 
 with open("data.json", "w", encoding="utf8") as fp:
     json.dump(database, fp, ensure_ascii=False)

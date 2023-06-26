@@ -28,7 +28,7 @@ class MySpider(scrapy.Spider):
 
     def parse(self, response):
         page_number = response.css('ul.page-numbers li a.page-numbers::text').getall()[-2]
-        page_number = 1
+        page_number = 2
         for index in range(1, int(page_number) + 1):
             request = scrapy.Request(url=f'{self.start_urls[0]}page/{index}/', callback=self.get_pages)
             yield request
@@ -42,10 +42,6 @@ class MySpider(scrapy.Spider):
     def get_pack(self, response):
         title = response.css('h1.title::text').get()
         title = validateTitle(title)
-        # title = title.replace("[", "")
-        # title = title.replace("]", "")
-        # title = title.replace("Cosplay ", "")
-        # title = f"Cosplay {title}"
         images = response.css('figure.wp-block-image img::attr(data-src)').getall()
 
         if len(images) == 0:
@@ -54,7 +50,7 @@ class MySpider(scrapy.Spider):
         folder = self.target_path / f"{title}"
         zip_file = self.target_path / f"{title}.zip"
         if zip_file.exists():
-            # print(f"{zip_file} 已存在")
+            print(f"{zip_file} 已存在")
             return
 
         Path(folder).mkdir(exist_ok=True)

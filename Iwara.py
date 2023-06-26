@@ -38,7 +38,7 @@ class MySpider(scrapy.Spider):
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.50',
                         'Referer': f'https://www.iwara.tv/',
                         'Origin': f'https://www.iwara.tv',
-                        'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1MmYyMjYyLWVjNjctNGU4Yi04OWI2LTdkOThjMDM4NmNhOSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoidXNlciIsInByZW1pdW0iOmZhbHNlLCJpc3MiOiJpd2FyYSIsImlhdCI6MTY4NTE3NTc1NCwiZXhwIjoxNjg1MTc5MzU0fQ.OVkD9XTDvlE6pufncSeZljte-0XDOmrdmqpx6n9gNmI',
+                        'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1MmYyMjYyLWVjNjctNGU4Yi04OWI2LTdkOThjMDM4NmNhOSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoidXNlciIsInByZW1pdW0iOmZhbHNlLCJpc3MiOiJpd2FyYSIsImlhdCI6MTY4NjU2ODM4NSwiZXhwIjoxNjg2NTcxOTg1fQ.ofkT2HyooLkQ9duXUB8AY3THwNcDorTR_IBdOpmCyQw',
                     }
                     request = scrapy.Request(url=f"https://api.iwara.tv/video/{video_id}", headers=headers,
                                              callback=self.parse,

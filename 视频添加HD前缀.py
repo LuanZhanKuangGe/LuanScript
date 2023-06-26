@@ -9,7 +9,7 @@ import cv2
 
 root = tk.Tk()
 root.withdraw()
-root_dir = filedialog.askdirectory()
+root_dir = filedialog.askdirectory() + r"//"
 
 for item in os.listdir(root_dir):
     folder = Path(root_dir) / item

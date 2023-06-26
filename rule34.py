@@ -1,14 +1,49 @@
 from pathlib import Path
 
+import requests
 import scrapy
-from ..items import urlItem
+from scrapy.crawler import CrawlerProcess
+from urllib.parse import urlparse, parse_qs
+
+from tqdm import tqdm
+
+import logging
+
+logging.getLogger('scrapy').setLevel(logging.WARNING)
+logging.getLogger('scrapy').propagate = False
 
 
-class MainSpider(scrapy.Spider):
+def download_video(url, ref, filename):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+        'Referer': ref,
+        'Origin': ref
+    }
+
+    response = requests.get(url, stream=True, headers=headers)
+
+    total_size = int(response.headers.get('Content-Length', 0))
+
+    block_size = 1024
+    progress_bar = tqdm(total=total_size, unit='iB', unit_scale=True)
+
+    with open(filename, 'wb') as f:
+        for data in response.iter_content(block_size):
+            progress_bar.update(len(data))
+            f.write(data)
+
+    progress_bar.close()
+    if total_size != 0 and progress_bar.n != total_size:
+        return 0
+    return 1
+
+
+class MySpider(scrapy.Spider):
     name = 'main'
     allowed_domains = ['rule34.xxx']
     file_exist = []
     start_urls = ["https://rule34.xxx/"]
+    artist = "ruriaraw"
 
     def start_requests(self):
         for file in sorted(Path('N:\\HentaiVideo\\rule34\\').glob('**/*.mp4')):
@@ -60,22 +95,32 @@ class MainSpider(scrapy.Spider):
                 url = response.urljoin(url)
                 request = scrapy.Request(url=url, callback=self.get_url)
                 request.cb_kwargs["artist"] = artist
-                print(counter, artist, url, "start download..")
                 yield request
             else:
                 print(counter, artist, url, "already exist.")
 
     def get_url(self, response, artist):
-        url_item = urlItem()
-
         if response.css("source::attr(src)").getall():
             url = response.css("source::attr(src)").getall()[0]
             url = response.urljoin(url)
-            url_item['file_urls'] = url.split('?')[0]
+            name = f"{artist}_{url.split('?')[-1]}.mp4"
+            path = Path('N:\\HentaiVideo\\rule34\\')/artist
+            file = path/name
+            url = url.split('?')[0]
 
-            name = artist + '_'
+            if not path.exists():
+                path.mkdir()
 
-            url_item['original_file_name'] = name + url.split('?')[1] + ".mp4"
-            url_item['file_urls'] = url_item['file_urls'] + '?' + name + url.split('?')[1]
+            if not file.exists():
+                if download_video(url, url, file):
+                    print(f"{name} 下载成功")
+                else:
+                    print(f"{name} 下载失败")
+                    file.unlink()
+            else:
+                print(f"{name} 已存在")
 
-            yield url_item
+
+process = CrawlerProcess()
+process.crawl(MySpider)
+process.start()
