@@ -12,23 +12,23 @@ from tqdm import tqdm
 import re
 import logging
 
-logging.getLogger('scrapy').setLevel(logging.ERROR)
-logging.getLogger('scrapy').propagate = False
+# logging.getLogger('scrapy').setLevel(logging.ERROR)
+# logging.getLogger('scrapy').propagate = False
 
 def validateTitle(title):
     return re.sub(r'[\\/:*?"<>|]', '', title)
 
 class MySpider(scrapy.Spider):
     name = 'madoucun_cosplay'
-    # start_urls = ['https://everia.club/category/cosplay/']
-    # target_path = Path(r'N:\HentaiPicture\EveriaClub\Cosplay')
-    start_urls = ['https://everia.club/category/korea/']
-    target_path = Path(r'N:\HentaiPicture\EveriaClub\Korea')
+    start_urls = ['https://everia.club/category/cosplay/']
+    target_path = Path(r'N:\HentaiPicture\EveriaClub\Cosplay')
+    # start_urls = ['https://everia.club/category/korea/']
+    # target_path = Path(r'N:\HentaiPicture\EveriaClub\Korea')
     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
 
     def parse(self, response):
         page_number = response.css('ul.page-numbers li a.page-numbers::text').getall()[-2]
-        page_number = 2
+        page_number = 5
         for index in range(1, int(page_number) + 1):
             request = scrapy.Request(url=f'{self.start_urls[0]}page/{index}/', callback=self.get_pages)
             yield request

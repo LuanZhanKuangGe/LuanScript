@@ -45,7 +45,7 @@ class MySpider(scrapy.Spider):
 
     def parse(self, response):
         page_number = response.css('ul.page-numbers li:nth-last-child(2) a::text').get()
-        page_number = 5
+        page_number = 1
         print(f"找到{page_number}页数据.")
         for index in range(1, int(page_number) + 1):
             request = scrapy.Request(url=f"https://fyptt.to/page/{index}", callback=self.get_pages)
@@ -82,6 +82,9 @@ class MySpider(scrapy.Spider):
             print(f"第{index}页 第{video_index + 1}个视频 {name} 已存在")
 
 
-process = CrawlerProcess()
+settings = scrapy.settings.Settings()
+settings.set('REQUEST_FINGERPRINTER_IMPLEMENTATION', '2.7')
+
+process = CrawlerProcess(settings)
 process.crawl(MySpider)
 process.start()

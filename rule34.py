@@ -3,14 +3,7 @@ from pathlib import Path
 import requests
 import scrapy
 from scrapy.crawler import CrawlerProcess
-from urllib.parse import urlparse, parse_qs
-
 from tqdm import tqdm
-
-import logging
-
-logging.getLogger('scrapy').setLevel(logging.WARNING)
-logging.getLogger('scrapy').propagate = False
 
 
 def download_video(url, ref, filename):
@@ -43,7 +36,8 @@ class MySpider(scrapy.Spider):
     allowed_domains = ['rule34.xxx']
     file_exist = []
     start_urls = ["https://rule34.xxx/"]
-    artist = "ruriaraw"
+
+    artist = "all"
 
     def start_requests(self):
         for file in sorted(Path('N:\\HentaiVideo\\rule34\\').glob('**/*.mp4')):
@@ -95,17 +89,16 @@ class MySpider(scrapy.Spider):
                 url = response.urljoin(url)
                 request = scrapy.Request(url=url, callback=self.get_url)
                 request.cb_kwargs["artist"] = artist
+                request.cb_kwargs["counter"] = counter
                 yield request
-            else:
-                print(counter, artist, url, "already exist.")
 
-    def get_url(self, response, artist):
+    def get_url(self, response, artist, counter):
         if response.css("source::attr(src)").getall():
             url = response.css("source::attr(src)").getall()[0]
             url = response.urljoin(url)
             name = f"{artist}_{url.split('?')[-1]}.mp4"
-            path = Path('N:\\HentaiVideo\\rule34\\')/artist
-            file = path/name
+            path = Path('N:\\HentaiVideo\\rule34\\') / artist
+            file = path / name
             url = url.split('?')[0]
 
             if not path.exists():
@@ -113,14 +106,17 @@ class MySpider(scrapy.Spider):
 
             if not file.exists():
                 if download_video(url, url, file):
-                    print(f"{name} 下载成功")
+                    print(f"{counter} {artist} {file} 下载成功")
                 else:
-                    print(f"{name} 下载失败")
+                    print(f"{counter} {artist} {file} 下载失败")
                     file.unlink()
             else:
-                print(f"{name} 已存在")
+                print(f"{file} 已存在")
 
 
-process = CrawlerProcess()
+settings = scrapy.settings.Settings()
+settings.set('REQUEST_FINGERPRINTER_IMPLEMENTATION', '2.7')
+
+process = CrawlerProcess(settings)
 process.crawl(MySpider)
 process.start()
