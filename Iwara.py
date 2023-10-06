@@ -38,7 +38,7 @@ class MySpider(scrapy.Spider):
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.50',
                         'Referer': f'https://www.iwara.tv/',
                         'Origin': f'https://www.iwara.tv',
-                        'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1MmYyMjYyLWVjNjctNGU4Yi04OWI2LTdkOThjMDM4NmNhOSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoidXNlciIsInByZW1pdW0iOmZhbHNlLCJpc3MiOiJpd2FyYSIsImlhdCI6MTY5MTE5ODEyMCwiZXhwIjoxNjkxMjAxNzIwfQ.wNX-XaW17bzTokfT7Zvru7sC6oJh8zDviGCWK9Iwjdw',
+                        'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1MmYyMjYyLWVjNjctNGU4Yi04OWI2LTdkOThjMDM4NmNhOSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoidXNlciIsInByZW1pdW0iOmZhbHNlLCJpc3MiOiJpd2FyYSIsImlhdCI6MTY5MzEwMzI4NywiZXhwIjoxNjkzMTA2ODg3fQ.cvXy1ngsu1q57LFBKG5fINTa6pIdhKvAUqU3KqQrK-0',
                     }
                     request = scrapy.Request(url=f"https://api.iwara.tv/video/{video_id}", headers=headers,
                                              callback=self.parse,
@@ -74,3 +74,10 @@ process = CrawlerProcess(settings)
 process.crawl(MySpider)
 process.start()
 
+name_list = []
+for folder in Path(r"N:\HentaiVideo\MMD").iterdir():
+    name = folder.name.split(" ")[0]
+    if name in name_list:
+        print(name)
+    else:
+        name_list.append(name)
