@@ -34,13 +34,13 @@ class MySpider(scrapy.Spider):
             yield request
 
     def get_pages(self, response):
-        image_packs = response.css('div.content div.img-wrap a::attr(href)').getall()
+        image_packs = response.css('h2.entry-title a::attr(href)').getall()
         for image_pack in image_packs:
             request = scrapy.Request(url=f"{image_pack}", callback=self.get_pack)
             yield request
 
     def get_pack(self, response):
-        title = response.css('h1.title::text').get()
+        title = response.css('h1.entry-title::text').get()
         title = validateTitle(title)
         images = response.css('figure.wp-block-image img::attr(data-src)').getall()
 
@@ -84,6 +84,9 @@ class MySpider(scrapy.Spider):
             shutil.rmtree(folder)
 
 
-process = CrawlerProcess()
+settings = scrapy.settings.Settings()
+settings.set('REQUEST_FINGERPRINTER_IMPLEMENTATION', '2.7')
+
+process = CrawlerProcess(settings)
 process.crawl(MySpider)
 process.start()

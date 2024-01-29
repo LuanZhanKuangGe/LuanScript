@@ -32,13 +32,14 @@ class MySpider(scrapy.Spider):
         for video in Path(target).iterdir():
             if video.is_file():
                 if video.name.startswith("Iwara"):
-                    video_id = video.stem.split('[')[-2].split(']')[0]
+                    video_id = video.stem.replace('[Source]', '')
+                    video_id = video_id.split('[')[-1].split(']')[0]
                     print(f"https://api.iwara.tv/video/{video_id}")
                     headers = {
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.50',
                         'Referer': f'https://www.iwara.tv/',
                         'Origin': f'https://www.iwara.tv',
-                        'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1MmYyMjYyLWVjNjctNGU4Yi04OWI2LTdkOThjMDM4NmNhOSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoidXNlciIsInByZW1pdW0iOmZhbHNlLCJpc3MiOiJpd2FyYSIsImlhdCI6MTY5MzEwMzI4NywiZXhwIjoxNjkzMTA2ODg3fQ.cvXy1ngsu1q57LFBKG5fINTa6pIdhKvAUqU3KqQrK-0',
+                        'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1MmYyMjYyLWVjNjctNGU4Yi04OWI2LTdkOThjMDM4NmNhOSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoidXNlciIsInByZW1pdW0iOmZhbHNlLCJpc3MiOiJpd2FyYSIsImlhdCI6MTcwMDk4MjU1MiwiZXhwIjoxNzAwOTg2MTUyfQ.WCdoQP9KuKbQ3ZOyB3HkHP6FjwGDc_enfXSyMjs39dY',
                     }
                     request = scrapy.Request(url=f"https://api.iwara.tv/video/{video_id}", headers=headers,
                                              callback=self.parse,
@@ -74,10 +75,10 @@ process = CrawlerProcess(settings)
 process.crawl(MySpider)
 process.start()
 
-name_list = []
-for folder in Path(r"N:\HentaiVideo\MMD").iterdir():
-    name = folder.name.split(" ")[0]
-    if name in name_list:
-        print(name)
-    else:
-        name_list.append(name)
+# name_list = []
+# for folder in Path(r"N:\HentaiVideo\MMD").iterdir():
+#     name = folder.name.split(" ")[0]
+#     if name in name_list:
+#         print(name)
+#     else:
+#         name_list.append(name)

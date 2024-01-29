@@ -27,6 +27,8 @@ def download_video(url, ref, filename):
 
     block_size = 1024
     progress_bar = tqdm(total=total_size, unit='iB', unit_scale=True)
+    custom_string = f"{filename.name}"
+    progress_bar.set_description(custom_string)
 
     with open(filename, 'wb') as f:
         for data in response.iter_content(block_size):

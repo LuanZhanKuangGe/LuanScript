@@ -1,34 +1,12 @@
 from pathlib import Path
 
-import requests
 import scrapy
 from scrapy.crawler import CrawlerProcess
-from tqdm import tqdm
+from luanfunc import download_video
 
-
-def download_video(url, ref, filename):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-        'Referer': ref,
-        'Origin': ref
-    }
-
-    response = requests.get(url, stream=True, headers=headers)
-
-    total_size = int(response.headers.get('Content-Length', 0))
-
-    block_size = 1024
-    progress_bar = tqdm(total=total_size, unit='iB', unit_scale=True)
-
-    with open(filename, 'wb') as f:
-        for data in response.iter_content(block_size):
-            progress_bar.update(len(data))
-            f.write(data)
-
-    progress_bar.close()
-    if total_size != 0 and progress_bar.n != total_size:
-        return 0
-    return 1
+import logging
+logging.getLogger('scrapy').setLevel(logging.WARNING)
+logging.getLogger('scrapy').propagate = False
 
 
 class MySpider(scrapy.Spider):
@@ -40,12 +18,12 @@ class MySpider(scrapy.Spider):
     artist = "all"
 
     def start_requests(self):
-        for file in sorted(Path('N:\\HentaiVideo\\rule34\\').glob('**/*.mp4')):
+        for file in sorted(Path(r'X:\rule34').glob('**/*.mp4')):
             self.file_exist.append(file.stem.split("_")[-1])
 
         counter = 0
         if not hasattr(self, 'artist') or self.artist == "all":
-            for artist in Path('N:\\HentaiVideo\\rule34\\').iterdir():
+            for artist in Path(r'X:\rule34').iterdir():
                 if artist.is_dir():
                     counter += 1
                     url = 'https://rule34.xxx/index.php?page=post&s=list&tags=video+sound+' + artist.name
@@ -97,7 +75,7 @@ class MySpider(scrapy.Spider):
             url = response.css("source::attr(src)").getall()[0]
             url = response.urljoin(url)
             name = f"{artist}_{url.split('?')[-1]}.mp4"
-            path = Path('N:\\HentaiVideo\\rule34\\') / artist
+            path = Path(r'X:\rule34') / artist
             file = path / name
             url = url.split('?')[0]
 

@@ -14,7 +14,7 @@ def main():
     url = args.url.split("?")[0]
     count = int(args.count)
 
-    command = r"C:\Softwares\tdl_Windows_64bit\tdl.exe dl -n quickstart -d C:\Users\zhoub\Downloads"
+    command = r"C:\Softwares\tdl_Windows_64bit\tdl.exe dl -d C:\Users\zhoub\Downloads"
 
     command += f" -u {url}"
 
@@ -22,6 +22,8 @@ def main():
         sub_url = ("/").join(url.split("/")[0:-1])
         sub_index = int(url.split("/")[-1])
         command += f" -u {sub_url}/{sub_index+i}"
+
+    command += " --continue"
 
     subprocess.run(command)
 
