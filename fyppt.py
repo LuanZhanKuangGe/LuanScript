@@ -98,5 +98,5 @@ if __name__ == "__main__":
 
     process = CrawlerProcess(settings=settings)
     process.crawl(FypptSpider)
-    process.crawl(OnlytikSpider)
+    # process.crawl(OnlytikSpider)
     process.start()

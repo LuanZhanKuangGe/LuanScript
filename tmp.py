@@ -1,24 +1,10 @@
-import itertools
+import json
+with open('tmp.json', 'r') as file:
+    database = json.load(file)
+    sorted_keys = sorted(database, key=database.get, reverse=True)
+    sorted_dict = {k: database[k] for k in sorted_keys}
+    print(sorted_dict)
 
-def generate_sorting_combinations(children):
-    all_combinations = list(itertools.permutations(children))
-    valid_combinations = []
 
-    for combination in all_combinations:
-        valid = True
-        for i in range(len(combination) - 1):
-            if abs(combination[i] - combination[i+1]) == 1:
-                valid = False
-                break
-        if valid:
-            valid_combinations.append(combination)
-
-    return valid_combinations
-
-if __name__ == "__main__":
-    children = list(range(1, 5))
-    sorting_combinations = generate_sorting_combinations(children)
-
-    print("Number of valid sorting combinations:", len(sorting_combinations))
-    for combination in sorting_combinations:
-        print(combination)
+with open("tmp.json", "w", encoding="utf8") as fp:
+    json.dump(sorted_dict, fp, ensure_ascii=False)

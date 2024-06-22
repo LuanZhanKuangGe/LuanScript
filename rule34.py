@@ -5,8 +5,8 @@ from scrapy.crawler import CrawlerProcess
 from luanfunc import download_video
 
 import logging
-logging.getLogger('scrapy').setLevel(logging.WARNING)
-logging.getLogger('scrapy').propagate = False
+# logging.getLogger('scrapy').setLevel(logging.WARNING)
+# logging.getLogger('scrapy').propagate = False
 
 
 class MySpider(scrapy.Spider):
@@ -94,6 +94,7 @@ class MySpider(scrapy.Spider):
 
 settings = scrapy.settings.Settings()
 settings.set('REQUEST_FINGERPRINTER_IMPLEMENTATION', '2.7')
+settings.set('DOWNLOAD_DELAY', '1')
 
 process = CrawlerProcess(settings)
 process.crawl(MySpider)
