@@ -84,7 +84,7 @@ def main():
 
     if args.update_javsd:
         for video in tqdm(list(config["AVSD"].rglob("*.nfo")), desc="update AVSD"):
-            video_id = video.stem.split(" ")[0]
+            video_id = video.stem.split(" ")[0].upper()
             if video_id.find("]") != -1:
                 video_id = video_id.split("]")[1]
                 if video_id[-1] == 'z':

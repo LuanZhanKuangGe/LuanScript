@@ -1,24 +1,17 @@
+import datetime
 from pathlib import Path
-
-import requests
 import scrapy
 import json
 from scrapy.crawler import CrawlerProcess
-from urllib.parse import urlparse, parse_qs
-
-from tqdm import tqdm
-import tkinter as tk
-from tkinter import filedialog
-
-root = tk.Tk()
-root.withdraw()
-target = filedialog.askdirectory() + r"//"
 import re
+
+target = r"X:\MMD"
 
 with open('data.json', 'r', encoding='utf-8') as file:
     database = json.load(file)
 
 output = {}
+
 
 # logging.getLogger('scrapy').setLevel(logging.WARNING)
 # logging.getLogger('scrapy').propagate = False
@@ -42,13 +35,23 @@ class MySpider(scrapy.Spider):
         for folder in Path(target).iterdir():
             if folder.is_dir() and folder.name.startswith('['):
                 name = folder.stem.split(']')[0][1:]
-                output[name] = 0
+                # if name not in ['113458', 'ratzy']:
+                #     continue
+                output[name] = {}
+                output[name]['name'] = folder.stem.split(' ')[1]
+                output[name]['all'] = 0
+                output[name]['fav'] = 0
+                output[name]['new_have'] = 0
+                output[name]['all_have'] = len(list(folder.iterdir()))
+                modification_time = folder.stat().st_mtime
+                modification_date = datetime.datetime.fromtimestamp(modification_time).date()
+                output[name]['update_time'] = str(modification_date)
+                output[name]['url'] = f"https://www.iwara.tv/profile/{name}/videos"
                 url = f"https://api.iwara.tv/profile/{name}"
                 print(url)
                 request = scrapy.Request(url=url, headers=self.headers, callback=self.parse,
                                          meta={'handle_httpstatus_list': [403]})
                 yield request
-
 
     def parse(self, response):
         print(response)
@@ -59,7 +62,7 @@ class MySpider(scrapy.Spider):
                 url = f"https://api.iwara.tv/videos?sort=likes&page={i}&user={user_id}"
                 print(url)
                 request = scrapy.Request(url=url, headers=self.headers, callback=self.parse2,
-                                        meta={'handle_httpstatus_list': [403]})
+                                         meta={'handle_httpstatus_list': [403]})
                 yield request
         elif response.status == 403:
             print(response.status)
@@ -69,10 +72,18 @@ class MySpider(scrapy.Spider):
         data_dict = json.loads(response.text)
         if response.status == 200:
             for result in data_dict['results']:
-                if result['id'] not in database['mmd_data'] and int(result['numLikes'])>500 and result['file']['path'].split('/')[0] in ['2023', '2024']:
-                    print(result['id'], result['title'], result['numLikes'])
+                if not result.get('file'):
+                    print(f"skip https://www.iwara.tv/video/{result['id']}")
+                    continue
+
+                if result['file']['path'].split('/')[0] in ['2023', '2024']:
                     user = result['user']['username']
-                    output[user] += 1
+                    output[user]['all'] += 1
+                    if result['id'].lower() in database['mmd_data']:
+                        output[user]['new_have'] += 1
+                    if int(result['numLikes']) > 500:
+                        output[user]['fav'] += 1
+
         elif response.status == 403:
             print(response.status)
 
@@ -84,9 +95,7 @@ process = CrawlerProcess(settings)
 process.crawl(MySpider)
 process.start()
 
-sorted_keys = sorted(output, key=output.get, reverse=True)
-sorted_dict = {k: output[k] for k in sorted_keys}
 with open("tmp.json", "w", encoding="utf8") as fp:
-    json.dump(sorted_dict, fp, ensure_ascii=False)
+    json.dump(output, fp, ensure_ascii=False)
 
-print(sorted_dict)
+print(output)
