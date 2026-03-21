@@ -17,7 +17,7 @@ def list_folders(directory):
     return folders
 
 folder_names = {}
-folders = list_folders("X:/MMD")
+folders = list_folders(r"D:\HentaiVideo\MMD")
 for folder in folders:
     # 只处理以'['开头且不以'[Del]'开头的文件夹
     if not folder.name.startswith('[') or folder.name.startswith('[Del]'):
@@ -25,7 +25,7 @@ for folder in folders:
     user_name = folder.name.split('[')[1].split(']')[0]
     folder_names[user_name] = folder
 
-files = list_files("X:/MMD/#Download")
+files = list_files(r"D:\HentaiVideo\MMD\#Download")
 
 for index,file in enumerate(files):
     print(f"正在处理[{index+1}/{len(files)}]: {file.name}")
@@ -47,7 +47,7 @@ for index,file in enumerate(files):
             if folder_names.get(user_id) is not None:
                 folder_path = folder_names[user_id]
             else:
-                folder_path = f"X:/MMD/#Download/[{user_id}] {user_name}"
+                folder_path = rf"D:\HentaiVideo\MMD\#Download\[{user_id}] {user_name}"
             
             # 创建目标文件夹(如果不存在)并移动文件
             Path(folder_path).mkdir(parents=True, exist_ok=True)

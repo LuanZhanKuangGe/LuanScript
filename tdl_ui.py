@@ -11,23 +11,33 @@ def main():
 
     args = parser.parse_args()
 
-    url = args.url.split("?")[0]
     count = int(args.count)
 
     command = r"C:\Softwares\tdl_Windows_64bit\tdl.exe dl"
 
-    command += f" -u {url}"
+    
 
-    for i in range(1, count):
-        sub_url = ("/").join(url.split("/")[0:-1])
-        sub_index = int(url.split("/")[-1])
-        command += f" -u {sub_url}/{sub_index+i}"
+    if 'comment=' in args.url:
+        url = args.url
+        start = int(url.split("comment=")[1])
+        stop =  start + count
+        for i in range(start, stop):
+            sub_url = url.split("comment=")[0]
+            subprocess.run(command + f" -u {sub_url}comment={i}")
+            print(f"{command} done!!!")
+    else:
+        url = args.url.split("?")[0]
+        command += f" -u {url}"
+        for i in range(1, count):
+            sub_url = ("/").join(url.split("/")[0:-1])
+            sub_index = int(url.split("/")[-1])
+            command += f" -u {sub_url}/{sub_index+i}"
 
-    command += r" --continue -d C:\Users\zhoub\Downloads"
+        command += r" --continue -d C:\Users\zhoub\Downloads"
 
-    subprocess.run(command)
+        subprocess.run(command)
 
-    print(f"{command} done!!!")
+        print(f"{command} done!!!")
 
 if __name__ == "__main__":
     main()

@@ -16,14 +16,15 @@ class MySpider(scrapy.Spider):
     start_urls = ["https://rule34.xxx/"]
 
     artist = "all"
+    target = Path(r'D:\HentaiVideo\rule34')
 
     def start_requests(self):
-        for file in sorted(Path(r'X:\rule34').glob('**/*.mp4')):
+        for file in sorted(self.target.glob('**/*.mp4')):
             self.file_exist.append(file.stem.split("_")[-1])
 
         counter = 0
         if not hasattr(self, 'artist') or self.artist == "all":
-            for artist in Path(r'X:\rule34').iterdir():
+            for artist in self.target.iterdir():
                 if artist.is_dir():
                     counter += 1
                     url = 'https://rule34.xxx/index.php?page=post&s=list&tags=video+sound+' + artist.name
@@ -75,7 +76,7 @@ class MySpider(scrapy.Spider):
             url = response.css("source::attr(src)").getall()[0]
             url = response.urljoin(url)
             name = f"{artist}_{url.split('?')[-1]}.mp4"
-            path = Path(r'X:\rule34') / artist
+            path = self.target / artist
             file = path / name
             url = url.split('?')[0]
 

@@ -14,7 +14,7 @@ def get_folder_ids(directory):
                 folder_ids.append((folder_id, file_count))
     return folder_ids
 
-mmd_directory = r"X:\MMD"
+mmd_directory = r"D:\HentaiVideo\MMD"
 folder_ids = get_folder_ids(mmd_directory)
 
 print(f"总共找到 {len(folder_ids)} 个文件夹ID。")
@@ -48,7 +48,7 @@ unfollowed_folders = [(folder_id, file_count) for folder_id, file_count in folde
 unfollowed_folders.sort(key=lambda x: x[1], reverse=True)
 
 for folder_id, file_count in unfollowed_folders:
-    print(f"用户ID: {folder_id}, 文件数量: {file_count}")
+    print(f"用户ID: {folder_id}, 文件数量: {file_count}, url：https://www.iwara.tv/profile/{folder_id}")
 
 
 

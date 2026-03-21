@@ -18,6 +18,7 @@ class FypptSpider(scrapy.Spider):
     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
     # 初始化下载视频的计数器
     video_download_count = 0
+    video_download_path = Path(r"D:\PornWebCam\【fyptt】")
     
     def parse(self, response):
         # 获取总页数
@@ -49,11 +50,11 @@ class FypptSpider(scrapy.Spider):
         parsed_url = urlparse(response.url)
         id, title = parsed_url.path.split('/')[1:3]
         name = validateTitle(f"[{id}]{title}")
-        file = Path(r"V:\【fyptt】") / f"{name}.mp4"
+        file = self.video_download_path / f"{name}.mp4"
 
         # 检查文件是否已存在
         if file.exists():
-            # print(f"第{index}页 第{video_index + 1}个视频 {name} 已存在")
+            print(f"第{index}页 第{video_index + 1}个视频 {name} 已存在")
             return
 
         # 提取视频URL并下载

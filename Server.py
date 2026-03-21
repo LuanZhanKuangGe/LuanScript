@@ -10,6 +10,12 @@ def api_main():
         dict = json.load(fp)
         return dict
 
+@app.route("/iwara", methods=["GET"])
+def api_iwara():
+    with open("./data-iwara.json", "r", encoding="utf8") as fp:
+        dict = json.load(fp)
+        return dict
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="2233")

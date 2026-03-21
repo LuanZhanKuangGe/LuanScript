@@ -1,0 +1,93 @@
+import time
+import json
+import paramiko
+from pathlib import Path
+from tqdm import tqdm  # 导入tqdm模块
+
+database = {'jav_id': [], 'fc2_id':[], 'fc2_time':0}
+
+datapath = {}
+datapath['fc2'] = Path(r"W:")
+
+always_update = True
+
+HD_PATH = Path(r"D:\AVHD")
+FC2_PATH = Path(r"D:\AVFC2")
+AVSD_PATH = Path(r"D:\AVSD")
+
+for key in ['fc2']:
+    with open("data-jav.json", "r", encoding="utf8") as fp:
+        database_time = json.load(fp)[f'{key}_time']
+
+        folder_time = datapath[key].stat().st_mtime
+        print('数据时间:', time.ctime(database_time))
+        print('目录时间:', time.ctime(folder_time))
+
+        if folder_time > database_time or always_update:
+            print(f'开始更新{key}')
+            database[f'{key}_time'] = folder_time
+            
+            for video in tqdm(list(datapath[key].rglob("*.nfo")), desc=f"update {key} PATH"):
+                video_id = video.stem.split(" ")[0]
+                database[f'{key}_id'].append(video_id)
+                if key == 'fc2':
+                    video_id = video_id.replace('-', '-PPV-')
+                    database[f'{key}_id'].append(video_id)
+        else:
+            print(f'跳过更新{key}')
+
+    for item in database[f'{key}_id']:
+        if item not in database['jav_id']:
+            database['jav_id'].append(item)
+        else:
+            print(f'发现重复文件：{item}')
+
+# # 更新JAV数据
+# for video in tqdm(list(HD_PATH.rglob("*.nfo")), desc="update AVHD"):   
+#     video_id = video.stem.split(" ")[0]
+#     if video_id.find("]") != -1:
+#         video_id = video_id.split("]")[1]
+#         if video_id[-1] == 'z':
+#             video_id = video_id[0:-1]
+#         if video_id not in database['jav_id']:
+#             database['jav_id'].append(video_id)
+#         else:
+#             print(video_id)
+#     else:
+#         print(video)
+
+# for video in tqdm(list(FC2_PATH.rglob("*.nfo")), desc="update FC2_PATH"):
+#     video_id = video.stem.split(" ")[0]
+#     database['jav_id'].append(video_id)
+#     video_id = video_id.replace('-', '-PPV-')
+#     database['jav_id'].append(video_id)
+
+# for video in tqdm(list(AVSD_PATH.rglob("*.nfo")), desc="update AVSD"):
+#     video_id = video.stem.split(" ")[0].upper()
+#     if video_id.find("]") != -1:
+#         video_id = video_id.split("]")[1]
+#         if video_id[-1] == 'z':
+#             video_id = video_id[0:-1]
+#         if video_id not in database['jav_id']:
+#             database['jav_id'].append(video_id)
+#         else:
+#             print(video_id)
+#     else:
+#         print(video)
+
+with open("data-jav.json", "w", encoding="utf8") as fp:
+    json.dump(database, fp, ensure_ascii=False)
+
+# # 连接到 Linux 主机
+# ssh_client = paramiko.SSHClient()
+# ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+# ssh_client.connect(hostname='192.168.5.1', username='root', password='1234')
+
+# # 传输文件
+# sftp_client = ssh_client.open_sftp()
+# # sftp_client.put('./server.py', '/share/script/server.py')
+# sftp_client.put('./data-jav.json', '/share/script/data-jav.json')
+# sftp_client.close()
+
+# # 断开连接
+# ssh_client.close()

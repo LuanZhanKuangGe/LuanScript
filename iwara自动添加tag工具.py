@@ -65,7 +65,7 @@ def list_folders(directory):
     folders.sort(key=lambda x: x.name)
     return folders
 
-folders = list_folders("X:\MMD\#Download")
+folders = list_folders(r"D:\HentaiVideo\MMD\#Download")
 for index,folder in enumerate(folders):
     if not folder.name.startswith('[') or folder.name.startswith('[Del]'):
         continue
@@ -76,7 +76,7 @@ for index,folder in enumerate(folders):
     mp4_count = len(mp4_files)
 
     if mp4_count < 10:
-        mp4_count = 0
+        mp4_count = 1
     elif 10 <= mp4_count < 50:
         mp4_count = 10
     elif 50 <= mp4_count < 100:
@@ -88,11 +88,7 @@ for index,folder in enumerate(folders):
     user_name, last_video_year, video_likes = get_profile_json(name)
 
     if last_video_year is not None:
-        new_folder_name = f"[{name}] {user_name} #{last_video_year}"
-        if video_likes != 0:
-            new_folder_name = f'{new_folder_name} #{video_likes}k'
-        if mp4_count != 0:
-            new_folder_name = f'{new_folder_name} #{mp4_count}v'
+        new_folder_name = f"[{name}] {user_name} #{last_video_year} #{video_likes}k #{mp4_count}v"
         new_folder_path = folder.parent / new_folder_name
         print(f"正在将文件夹从 '{folder.name}' 重命名为 '{new_folder_name}'")
         folder.rename(new_folder_path)

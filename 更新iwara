@@ -1,0 +1,59 @@
+import json
+import paramiko
+from tqdm import tqdm
+from pathlib import Path
+
+database={}
+database["mmd_data"] = []
+database["mmd_artist"] = []
+# 更新mmd数据
+for folder in tqdm(list(Path(r"D:\HentaiVideo\MMD").iterdir()), desc="update MMD"):
+    if folder.is_dir() and not folder.name.startswith('[Del]') and not folder.name.startswith('#未整理'):
+        for video in folder.rglob("*.mp4"):
+            video_id = video.stem.replace('[Source]', '')
+            video_id = video_id.split('[')[-1].split(']')[0].lower()
+            if video_id not in database["mmd_data"]:
+                database["mmd_data"].append(video_id)
+            else:
+                print(video)
+        if folder.name.startswith('['):
+            artist = folder.name.split(']')[0].split('[')[1]
+            if artist not in database["mmd_artist"]:
+                database["mmd_artist"].append(artist)
+            else:
+                print(artist)
+
+# 更新mmd数据
+for folder in tqdm(list(Path(r"D:\HentaiVideo\HMV").iterdir()), desc="update HMV"):
+    if folder.is_dir() and not folder.name.startswith('[Del]') and not folder.name.startswith('#未整理'):
+        for video in folder.rglob("*.mp4"):
+            video_id = video.stem.replace('[Source]', '')
+            video_id = video_id.split('[')[-1].split(']')[0].lower()
+            if video_id not in database["mmd_data"]:
+                database["mmd_data"].append(video_id)
+            else:
+                print(video)
+        if folder.name.startswith('['):
+            artist = folder.name.split(']')[0].split('[')[1]
+            if artist not in database["mmd_artist"]:
+                database["mmd_artist"].append(artist)
+            else:
+                print(artist)
+
+
+with open("data-iwara.json", "w", encoding="utf8") as fp:
+    json.dump(database, fp, ensure_ascii=False)
+
+# 连接到 Linux 主机
+ssh_client = paramiko.SSHClient()
+ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh_client.connect(hostname='192.168.5.1', username='root', password='1234')
+
+# 传输文件
+sftp_client = ssh_client.open_sftp()
+# sftp_client.put('./server.py', '/share/script/server.py')
+sftp_client.put('./data-iwara.json', '/share/script/data-iwara.json')
+sftp_client.close()
+
+# 断开连接
+ssh_client.close()

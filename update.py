@@ -8,13 +8,12 @@ from gooey import Gooey, GooeyParser
 
 @Gooey(program_name="Update GUI")
 def main():
-    config = {"MangaPath": Path(r"U:\Manga"), "AVHD": Path(r"Y:"), "AVSD": Path(r"Z:"), "AVFC2": Path(r"W:"),
-              "Rule34": Path(r"X:\rule34"),"MMD": Path(r"X:\MMD")}
+    config = {"MangaPath": Path(r"U:\Manga"), "AVHD": Path(r"D:\AVHD"), "AVSD": Path(r"D:\AVSD"), "AVFC2": Path(r"D:\AVFC2"),
+              "Rule34": Path(r"X:\rule34")}
 
     database = {"rule34_data": [], "rule34_artist": [], "mmd_data": [], "mmd_artist": [], "manga": {}, 'jav_id': [], 'jav_actor': {}}
 
     parser = GooeyParser(description="Update")
-    parser.add_argument('--update_mmd', metavar='Checkbox', help='Update MMD', action='store_true')
     parser.add_argument('--update_rule34', metavar='Checkbox', help='Update rule34', action='store_true')
     parser.add_argument('--update_manga', metavar='Checkbox', help='Update manga', action='store_true')
     parser.add_argument('--update_javhd', metavar='Checkbox', help='Update JAV HD', action='store_true')
@@ -22,23 +21,6 @@ def main():
 
     args = parser.parse_args()
 
-    if args.update_mmd:
-        # 更新mmd数据
-        for folder in tqdm(list(config["MMD"].iterdir()), desc="update MMD"):
-            if folder.is_dir() and not folder.name.startswith('[Del]'):
-                for video in folder.rglob("*.mp4"):
-                    video_id = video.stem.replace('[Source]', '')
-                    video_id = video_id.split('[')[-1].split(']')[0].lower()
-                    if video_id not in database["mmd_data"]:
-                        database["mmd_data"].append(video_id)
-                    else:
-                        print(video)
-                if folder.name.startswith('['):
-                    artist = folder.name.split(']')[0].split('[')[1]
-                    if artist not in database["mmd_artist"]:
-                        database["mmd_artist"].append(artist)
-                    else:
-                        print(artist)
 
     if args.update_rule34:
         # 更新rule34数据
@@ -72,7 +54,7 @@ def main():
                 if video_id not in database['jav_id']:
                     database['jav_id'].append(video_id)
                 else:
-                    print(video_id)
+                    print(video, video_id)
             else:
                 print(video)
 
